@@ -46,9 +46,33 @@ const register = asyncHandler(async (req,res)=>{
      
 });
 
+//login
 
+const login = asyncHandler(async(req,res)=>{
+    const {email,password}= req.body
+    const user = await User.findOne({email})
+    if(!user){
+        res.status(401)
+        throw new Error('Invalid email or password')
+
+    }
+    const isMatch = await bcrypt.compare(password,user?.password)
+    if(!isMatch){
+        res.status(401);
+        throw new Error("Invalid email or password");
+    }
+    //send the response
+    res.json({
+    _id:user?._id,
+    status:'success',
+    message:'Login success',
+    username:user?.username
+});
+
+});
 
 
 module.exports = {
     register,
+    login,
 };
