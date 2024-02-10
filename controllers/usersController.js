@@ -1,10 +1,11 @@
 const bcrypt = require('bcryptjs')
+const asyncHandler = require("express-async-handler")
 const User = require("../models/User");
 
 //Registration
 
-const register = async (req,res)=>{
-    try {
+const register = asyncHandler(async (req,res)=>{
+    
         const {username,email,password}= req.body
         //validate
         if(!username || !email || !password){
@@ -42,11 +43,8 @@ const register = async (req,res)=>{
                 email,
             },
         });
-    } catch (error) {
-        throw new Error(error);
-    }
-    
-};
+     
+});
 
 
 
