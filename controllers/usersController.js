@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const asyncHandler = require("express-async-handler")
 const User = require("../models/User");
 
@@ -56,11 +57,24 @@ const login = asyncHandler(async(req,res)=>{
         throw new Error('Invalid email or password')
 
     }
+    // password validation
     const isMatch = await bcrypt.compare(password,user?.password)
     if(!isMatch){
         res.status(401);
         throw new Error("Invalid email or password");
     }
+    //generate jwt token
+    const token = jwt.sign({id: user?._id},process.env.JWT_SECRET,{
+        expiresIn : '30d'
+    })
+    console.log(token)
+    //set the token into cookie
+    res.cookie('token',token,{
+        httpOnly:true,
+        secure:process.env.NODE_ENV === "production",
+        sameSite:"strict",
+        maxAge: 24 * 60 * 60 * 1000,
+    });
     //send the response
     res.json({
     _id:user?._id,
