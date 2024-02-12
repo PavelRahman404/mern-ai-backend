@@ -80,7 +80,8 @@ const login = asyncHandler(async(req,res)=>{
     _id:user?._id,
     status:'success',
     message:'Login success',
-    username:user?.username
+    username:user?.username,
+    username:user?.email,
 });
 
 });
@@ -90,8 +91,25 @@ const logout = asyncHandler(async(req,res)=>{
     res.cookie('token', '',{maxAge:1});
     res.status(200).json({message:"Logged out successfully"});
 });
+
+// User profile
+const userProfile = asyncHandler(async(req,res)=>{
+    const id = '65c726312f8db867f151459a'
+    const user = await User.findById(id).select('-password');
+    if(user){
+        res.status(200).json({
+            status: "success",
+            user,
+        })
+    }else{
+        res.status(404);
+        throw new Error("User not found");
+    }
+})
+
 module.exports = {
     register,
     login,
     logout,
+    userProfile,
 };
